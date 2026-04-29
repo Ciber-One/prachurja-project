@@ -1,0 +1,105 @@
+{
+  "theme": "Light",
+  "archetype": "1 (Organic & Earthy)",
+  "brand_name": "Prachurja",
+  "domain": "E-commerce (WhatsApp Ordering)",
+  "emotional_tone": "Premium, clean, culturally rich, trustworthy, abundant",
+  "typography": {
+    "heading_font": "Cormorant Garamond",
+    "body_font": "Outfit",
+    "hierarchy": {
+      "h1": "text-4xl sm:text-5xl lg:text-6xl tracking-tight leading-none",
+      "h2": "text-2xl sm:text-3xl lg:text-4xl tracking-tight",
+      "h3": "text-xl sm:text-2xl",
+      "body": "text-base leading-relaxed",
+      "labels": "uppercase text-xs tracking-[0.2em]"
+    }
+  },
+  "colors": {
+    "background": {
+      "primary": "#F9F6F0", 
+      "secondary": "#E2E8DD" 
+    },
+    "text": {
+      "primary": "#1E1E1E",
+      "secondary": "#60655D",
+      "inverse": "#FFFFFF"
+    },
+    "brand": {
+      "primary": "#1B4332",
+      "accent": "#A95C40",
+      "whatsapp": "#25D366" 
+    },
+    "surface": {
+      "card": "#FFFFFF",
+      "border": "rgba(27, 67, 50, 0.1)"
+    }
+  },
+  "spacing_and_layout": {
+    "philosophy": "Generous Spacing, Mobile-First",
+    "section_padding": "py-24 sm:py-32",
+    "container_padding": "px-6 sm:px-12 lg:px-24",
+    "grid_strategy": "The 'Bento' Protocol for category grids and Asymmetric Tetris layout for about section. Cardless products with images directly sitting on the surface with subtle rounded corners."
+  },
+  "components": {
+    "navigation": {
+      "style": "Crystal Glassmorphism: backdrop-blur-xl bg-[#F9F6F0]/80 border-b border-[#1B4332]/10",
+      "links": "Hover state: text-[#1B4332]"
+    },
+    "buttons": {
+      "primary": "bg-[#1B4332] text-white hover:bg-[#1B4332]/90 rounded-none px-8 py-4 transition-transform hover:-translate-y-1 shadow-md hover:shadow-lg",
+      "whatsapp": "bg-[#25D366] text-white hover:bg-[#128C7E] flex items-center justify-center gap-2 rounded-full px-6 py-3 transition-transform hover:-translate-y-1 shadow-md",
+      "secondary": "border border-[#1B4332] text-[#1B4332] hover:bg-[#1B4332] hover:text-white rounded-none px-8 py-4 transition-all"
+    },
+    "cards": {
+      "product": "bg-transparent border-none. Image: max-h-[80vh] md:max-h-none object-cover rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-shadow. Text content aligned left with generous padding p-4."
+    }
+  },
+  "icons_library": "lucide-react",
+  "media": {
+    "hero": {
+      "url": "https://static.prod-images.emergentagent.com/jobs/0d90bd11-046c-44de-8266-6ee207c08c0e/images/f8450e60bfdb1bfcc7d823620d4d4b24253e3d34ee7965b9dc0d6ba00460207e.png",
+      "description": "Wide-angle cinematic photograph of lush green tea gardens in Assam at golden hour sunrise",
+      "overlay": "bg-black/30"
+    },
+    "products": [
+      {
+        "name": "Assam Tea",
+        "url": "https://images.pexels.com/photos/9025660/pexels-photo-9025660.jpeg",
+        "description": "Elegant display of dried tea leaves in a ceramic bowl"
+      },
+      {
+        "name": "Organic Honey",
+        "url": "https://images.pexels.com/photos/8500508/pexels-photo-8500508.jpeg",
+        "description": "Close-up of golden honey in a jar showcasing its rich amber hue"
+      },
+      {
+        "name": "Bamboo Product",
+        "url": "https://static.prod-images.emergentagent.com/jobs/0d90bd11-046c-44de-8266-6ee207c08c0e/images/b619ad1bdb76544f5b9006bcd6ace7e6de697e8280ed5b1b341d78db8b2e933c.png",
+        "description": "Handcrafted bamboo lamp shade"
+      },
+      {
+        "name": "Traditional Assamese Dress",
+        "url": "https://static.prod-images.emergentagent.com/jobs/0d90bd11-046c-44de-8266-6ee207c08c0e/images/e8b55c1fd0d1bd81e5964c7f5b8b0cfe5b24344d76b89b0efdb8bc02bdb66ced.png",
+        "description": "Traditional Assamese silk Mekhela Sador fabric"
+      },
+      {
+        "name": "Joha Rice",
+        "url": "https://static.prod-images.emergentagent.com/jobs/0d90bd11-046c-44de-8266-6ee207c08c0e/images/99382bb257a48193c1b8910228654ebacb33a54545cb2fdc34358d321a1984e3.png",
+        "description": "Premium aromatic short-grain white rice in a bowl"
+      }
+    ]
+  },
+  "instructions_to_main_agent": [
+    "Install and use 'Cormorant Garamond' and 'Outfit' fonts from Google Fonts.",
+    "Implement the 'Order via WhatsApp' flow everywhere instead of typical 'Add to Cart'. The link should be formatted as `https://wa.me/<number>?text=I'm%20interested%20in%20[Product Name]`. Use a placeholder number like 1234567890 if not provided.",
+    "Ensure all product cards are cardless and minimal, relying on high-quality imagery.",
+    "Use Lenis for smooth scrolling if applicable.",
+    "Implement 'data-testid' on all interactive elements (e.g., data-testid='whatsapp-order-button').",
+    "Create pages: Homepage, Product Catalog, About Us, Contact. Route between them using React Router.",
+    "Ensure navigation bar is fixed, using glassmorphism styling provided.",
+    "Use pure HTML/Tailwind for layout composition, no heavy pre-built structural components unless it's an interactive element like a dialog or form from Shadcn.",
+    "Avoid using teal or purple colors.",
+    "The hero section should have 'Authentic Products from the Heart of Assam' as the main headline."
+  ]
+}
