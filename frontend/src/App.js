@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import "./App.css";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { HashRouter, Routes, Route } from "react-router-dom";
 import { CartProvider } from "./context/CartContext";
 import { AuthProvider } from "./context/AuthContext";
 import { CartSidebar } from "./components/CartSidebar";
@@ -30,7 +30,7 @@ const ScrollToTop = () => {
 function App() {
     return (
         <div className="App min-h-screen bg-[#F9F6F0]">
-            <BrowserRouter>
+            <HashRouter>
                 <AuthProvider>
                     <CartProvider>
                         <ScrollToTop />
@@ -67,7 +67,7 @@ function App() {
                         </Routes>
                     </CartProvider>
                 </AuthProvider>
-            </BrowserRouter>
+            </HashRouter>
         </div>
     );
 }
