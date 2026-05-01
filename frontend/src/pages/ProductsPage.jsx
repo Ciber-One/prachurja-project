@@ -5,7 +5,7 @@ import { Footer } from "../components/Footer";
 import { ProductCard } from "../components/ProductCard";
 import { CTASection } from "../components/CTASection";
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = "https://prachurja-project.onrender.com/api";
 
 const CATEGORY_FILTERS = [
     { label: "All", value: "all" },
