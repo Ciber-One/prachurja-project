@@ -20,9 +20,9 @@ from pydantic import BaseModel, Field, ConfigDict
 from typing import List, Optional
 
 # DB
-mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
+# mongo_url = os.environ['MONGO_URL']
+# client = AsyncIOMotorClient(mongo_url)
+# db = client[os.environ['DB_NAME']]
 
 # JWT Config
 JWT_SECRET = os.environ['JWT_SECRET']
@@ -77,7 +77,7 @@ async def get_current_user(request: Request) -> dict:
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=401, detail="Invalid token")
 
-def init_storage():
+def # init_storage():
     global storage_key
     if storage_key:
         return storage_key
@@ -248,16 +248,16 @@ async def startup():
 async def root():
     return {"message": "Prachurja API"}
 
-@api_router.get("/products", response_model=List[Product])
+@api_router.get("/products")
 async def get_products():
-    return await db.products.find({}, {"_id": 0}).to_list(100)
+    return PRODUCTS_SEED
 
-@api_router.get("/products/{slug}", response_model=Product)
+@api_router.get("/products/{slug}")
 async def get_product(slug: str):
-    product = await db.products.find_one({"slug": slug}, {"_id": 0})
-    if not product:
-        raise HTTPException(status_code=404, detail="Product not found")
-    return product
+    for p in PRODUCTS_SEED:
+        if p["slug"] == slug:
+            return p
+    raise HTTPException(status_code=404, detail="Product not found")
 
 @api_router.get("/products/category/{category}", response_model=List[Product])
 async def get_products_by_category(category: str):
