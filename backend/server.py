@@ -66,7 +66,7 @@ async def get_current_user(request: Request) -> dict:
         payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
         if payload.get("type") != "access":
             raise HTTPException(status_code=401, detail="Invalid token type")
-        user = await db.users.find_one({"_id": ObjectId(payload["sub"])})
+        user = await PRODUCTS_SEEDusers.find_one({"_id": ObjectId(payload["sub"])})
         if not user:
             raise HTTPException(status_code=401, detail="User not found")
         user["_id"] = str(user["_id"])
@@ -205,30 +205,30 @@ PRODUCTS_SEED = [
 ]
 
 async def seed_products():
-    count = await db.products.count_documents({})
+    count = await PRODUCTS_SEEDproducts.count_documents({})
     if count == 0:
         for p in PRODUCTS_SEED:
             product = Product(**p)
-            await db.products.insert_one(product.model_dump())
+            await PRODUCTS_SEEDproducts.insert_one(product.model_dump())
         logger.info("Seeded 5 products")
 
 async def seed_admin():
     email = os.environ.get("ADMIN_EMAIL", "admin@prachurja.in")
     password = os.environ.get("ADMIN_PASSWORD", "Prachurja@2026")
-    existing = await db.users.find_one({"email": email})
+    existing = await PRODUCTS_SEEDusers.find_one({"email": email})
     if not existing:
         hashed = hash_password(password)
-        await db.users.insert_one({"email": email, "password_hash": hashed, "name": "Admin", "role": "admin", "created_at": datetime.now(timezone.utc).isoformat()})
+        await PRODUCTS_SEEDusers.insert_one({"email": email, "password_hash": hashed, "name": "Admin", "role": "admin", "created_at": datetime.now(timezone.utc).isoformat()})
         logger.info(f"Admin user created: {email}")
     elif not verify_password(password, existing["password_hash"]):
-        await db.users.update_one({"email": email}, {"$set": {"password_hash": hash_password(password)}})
+        await PRODUCTS_SEEDusers.update_one({"email": email}, {"$set": {"password_hash": hash_password(password)}})
         logger.info("Admin password updated")
 
 @app.on_event("startup")
 async def startup():
     await seed_products()
     await seed_admin()
-    await db.users.create_index("email", unique=True)
+    await PRODUCTS_SEEDusers.create_index("email", unique=True)
     try:
         init_storage()
         logger.info("Object storage initialized")
@@ -261,23 +261,23 @@ async def get_product(slug: str):
 
 @api_router.get("/products/category/{category}", response_model=List[Product])
 async def get_products_by_category(category: str):
-    return await db.products.find({"category": category}, {"_id": 0}).to_list(100)
+    return await PRODUCTS_SEEDproducts.find({"category": category}, {"_id": 0}).to_list(100)
 
 @api_router.post("/contact")
 async def create_contact(input: ContactMessageCreate):
     msg = ContactMessage(**input.model_dump())
-    await db.contact_messages.insert_one(msg.model_dump())
+    await PRODUCTS_SEEDcontact_messages.insert_one(msg.model_dump())
     return {"message": "Thank you for reaching out!", "id": msg.id}
 
 @api_router.post("/orders")
 async def create_order(input: OrderCreate):
     order = Order(**input.model_dump())
-    await db.orders.insert_one(order.model_dump())
+    await PRODUCTS_SEEDorders.insert_one(order.model_dump())
     return {"message": "Order placed successfully!", "id": order.id, "status": order.status}
 
 @api_router.get("/orders/{order_id}")
 async def get_order(order_id: str):
-    order = await db.orders.find_one({"id": order_id}, {"_id": 0})
+    order = await PRODUCTS_SEEDorders.find_one({"id": order_id}, {"_id": 0})
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
     return order
@@ -287,7 +287,7 @@ async def get_order(order_id: str):
 @api_router.post("/auth/login")
 async def login(input: LoginInput):
     email = input.email.strip().lower()
-    user = await db.users.find_one({"email": email})
+    user = await PRODUCTS_SEEDusers.find_one({"email": email})
     if not user or not verify_password(input.password, user["password_hash"]):
         raise HTTPException(status_code=401, detail="Invalid email or password")
     user_id = str(user["_id"])
@@ -318,7 +318,7 @@ async def refresh(request: Request):
         payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
         if payload.get("type") != "refresh":
             raise HTTPException(status_code=401, detail="Invalid token type")
-        user = await db.users.find_one({"_id": ObjectId(payload["sub"])})
+        user = await PRODUCTS_SEEDusers.find_one({"_id": ObjectId(payload["sub"])})
         if not user:
             raise HTTPException(status_code=401, detail="User not found")
         new_access = create_access_token(str(user["_id"]), user["email"])
@@ -334,16 +334,16 @@ async def refresh(request: Request):
 async def admin_dashboard(user: dict = Depends(get_current_user)):
     if user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Admin only")
-    total_products = await db.products.count_documents({})
-    total_orders = await db.orders.count_documents({})
-    pending_orders = await db.orders.count_documents({"status": "pending"})
-    total_contacts = await db.contact_messages.count_documents({})
+    total_products = await PRODUCTS_SEEDproducts.count_documents({})
+    total_orders = await PRODUCTS_SEEDorders.count_documents({})
+    pending_orders = await PRODUCTS_SEEDorders.count_documents({"status": "pending"})
+    total_contacts = await PRODUCTS_SEEDcontact_messages.count_documents({})
     # Revenue
     pipeline = [{"$group": {"_id": None, "total": {"$sum": "$total_amount"}}}]
-    revenue_result = await db.orders.aggregate(pipeline).to_list(1)
+    revenue_result = await PRODUCTS_SEEDorders.aggregate(pipeline).to_list(1)
     total_revenue = revenue_result[0]["total"] if revenue_result else 0
     # Recent orders
-    recent_orders = await db.orders.find({}, {"_id": 0}).sort("created_at", -1).to_list(5)
+    recent_orders = await PRODUCTS_SEEDorders.find({}, {"_id": 0}).sort("created_at", -1).to_list(5)
     return {
         "total_products": total_products,
         "total_orders": total_orders,
@@ -361,8 +361,8 @@ async def admin_list_orders(user: dict = Depends(get_current_user), status: str 
     if status and status != "all":
         query["status"] = status
     skip = (page - 1) * limit
-    total = await db.orders.count_documents(query)
-    orders = await db.orders.find(query, {"_id": 0}).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
+    total = await PRODUCTS_SEEDorders.count_documents(query)
+    orders = await PRODUCTS_SEEDorders.find(query, {"_id": 0}).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
     return {"orders": orders, "total": total, "page": page, "pages": (total + limit - 1) // limit}
 
 @api_router.put("/admin/orders/{order_id}/status")
@@ -372,7 +372,7 @@ async def admin_update_order_status(order_id: str, body: dict, user: dict = Depe
     new_status = body.get("status")
     if new_status not in ["pending", "confirmed", "shipped", "delivered", "cancelled"]:
         raise HTTPException(status_code=400, detail="Invalid status")
-    result = await db.orders.update_one({"id": order_id}, {"$set": {"status": new_status}})
+    result = await PRODUCTS_SEEDorders.update_one({"id": order_id}, {"$set": {"status": new_status}})
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Order not found")
     return {"message": "Order status updated", "status": new_status}
@@ -381,17 +381,17 @@ async def admin_update_order_status(order_id: str, body: dict, user: dict = Depe
 async def admin_list_products(user: dict = Depends(get_current_user)):
     if user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Admin only")
-    return await db.products.find({}, {"_id": 0}).sort("created_at", -1).to_list(100)
+    return await PRODUCTS_SEEDproducts.find({}, {"_id": 0}).sort("created_at", -1).to_list(100)
 
 @api_router.post("/admin/products")
 async def admin_create_product(input: ProductCreate, user: dict = Depends(get_current_user)):
     if user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Admin only")
-    existing = await db.products.find_one({"slug": input.slug})
+    existing = await PRODUCTS_SEEDproducts.find_one({"slug": input.slug})
     if existing:
         raise HTTPException(status_code=400, detail="Product with this slug already exists")
     product = Product(**input.model_dump())
-    await db.products.insert_one(product.model_dump())
+    await PRODUCTS_SEEDproducts.insert_one(product.model_dump())
     return {"message": "Product created", "id": product.id}
 
 @api_router.put("/admin/products/{product_id}")
@@ -401,7 +401,7 @@ async def admin_update_product(product_id: str, input: ProductUpdate, user: dict
     update_data = {k: v for k, v in input.model_dump().items() if v is not None}
     if not update_data:
         raise HTTPException(status_code=400, detail="No fields to update")
-    result = await db.products.update_one({"id": product_id}, {"$set": update_data})
+    result = await PRODUCTS_SEEDproducts.update_one({"id": product_id}, {"$set": update_data})
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Product not found")
     return {"message": "Product updated"}
@@ -410,7 +410,7 @@ async def admin_update_product(product_id: str, input: ProductUpdate, user: dict
 async def admin_delete_product(product_id: str, user: dict = Depends(get_current_user)):
     if user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Admin only")
-    result = await db.products.delete_one({"id": product_id})
+    result = await PRODUCTS_SEEDproducts.delete_one({"id": product_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Product not found")
     return {"message": "Product deleted"}
@@ -420,8 +420,8 @@ async def admin_list_contacts(user: dict = Depends(get_current_user), page: int 
     if user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Admin only")
     skip = (page - 1) * limit
-    total = await db.contact_messages.count_documents({})
-    contacts = await db.contact_messages.find({}, {"_id": 0}).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
+    total = await PRODUCTS_SEEDcontact_messages.count_documents({})
+    contacts = await PRODUCTS_SEEDcontact_messages.find({}, {"_id": 0}).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
     return {"contacts": contacts, "total": total, "page": page, "pages": (total + limit - 1) // limit}
 
 @api_router.post("/admin/upload")
