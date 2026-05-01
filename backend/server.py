@@ -77,7 +77,7 @@ async def get_current_user(request: Request) -> dict:
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=401, detail="Invalid token")
 
-def # init_storage():
+# def init_storage():
     global storage_key
     if storage_key:
         return storage_key
