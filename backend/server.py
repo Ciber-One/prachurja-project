@@ -16,14 +16,16 @@ PRODUCTS = [
         "name": "Assam Tea",
         "slug": "assam-tea",
         "price": 250,
-        "description": "Premium Assam tea"
+        "description": "Premium Assam tea",
+        "category": "tea"
     },
     {
         "id": 2,
         "name": "Organic Honey",
         "slug": "organic-honey",
         "price": 300,
-        "description": "Pure natural honey"
+        "description": "Pure natural honey",
+        "category": "honey"
     }
 ]
 
